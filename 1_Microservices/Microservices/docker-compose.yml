@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  client:
+    image: ${DOCKER_REGISTRY-}client
+    build:
+      context: .
+      dockerfile: Client/Dockerfile
+  server:
+    image: ${DOCKER_REGISTRY-}server
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    
