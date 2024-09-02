@@ -17,15 +17,17 @@ public class PaymentGeneratorController(
     private readonly Fixture _fixture = new();
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromHeader(Name = nameof(ServerStability))] ServerStability serverStability = ServerStability.Functional)
     {
         var payment = _fixture.Create<Payment>();
         var paymentJson = System.Text.Json.JsonSerializer.Serialize(payment);
 
         var request = new HttpRequestMessage(HttpMethod.Post, options.Value.ServerPath)
         {
-            Content = new StringContent(paymentJson, Encoding.UTF8, "application/json")
+            Content = new StringContent(paymentJson, Encoding.UTF8, "application/json"),
         };
+
+        request.Headers.Add(nameof(ServerStability), serverStability.ToString());
 
         logger.LogInformation("Sending payment: {Payment}", paymentJson);
 

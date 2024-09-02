@@ -16,11 +16,12 @@ public class PaymentExecutionController(ILogger<PaymentExecutionController> logg
     [HttpPost]
     //[UnstableHeader]
     public IActionResult Post(
-        [FromHeader(Name = "UnstableServer")] bool shouldFailIntermittently,
-        Payment payment)
+        Payment payment,
+        [FromHeader(Name = nameof(ServerStability))] ServerStability serverStability = ServerStability.Functional)
     {
         var paymentJson = JsonSerializer.Serialize(payment, JsonSerializerOptions);
-        if (shouldFailIntermittently && DateTime.Now.Ticks % 2 == 0)
+        if (serverStability is ServerStability.Flaky && DateTime.Now.Ticks % 2 == 0
+            || serverStability is ServerStability.Failing)
         {
             logger.LogError("Payment failed: {Payment}", paymentJson);
             return StatusCode(500);
