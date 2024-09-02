@@ -14,7 +14,6 @@ public class PaymentExecutionController(ILogger<PaymentExecutionController> logg
     };
 
     [HttpPost]
-    //[UnstableHeader]
     public IActionResult Post(
         Payment payment,
         [FromHeader(Name = nameof(ServerStability))] ServerStability serverStability = ServerStability.Functional)
