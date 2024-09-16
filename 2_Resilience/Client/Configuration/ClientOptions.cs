@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Server.Controllers;
+namespace Client.Configuration;
 
 public class ClientOptions
 {
     [Required]
-    public required Uri ServerPath { get; init; }
+    public required Uri Path { get; init; }
 }

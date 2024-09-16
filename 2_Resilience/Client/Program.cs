@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
+using Client.Configuration;
 using Client.Controllers;
-using Server.Controllers;
+using MassTransit;
+using MassTransit.Configuration;
+using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,21 @@ builder.Services.AddHttpClient<PaymentGeneratorController>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
+builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
+
+builder.Services.AddMassTransit(configurator =>
+{
+    //var options = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();
+    configurator.UsingRabbitMq(//(context, cfg) =>
+    //{
+    //    //cfg.Host(options.Host, 5672, "/", c =>
+    //    //{
+    //    //    c.Username(options.User);
+    //    //    c.Password(options.Password);
+    //    //});
+    //}
+    );
+});
 
 var app = builder.Build();
 
@@ -26,4 +44,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
