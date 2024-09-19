@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Server.Configuration;
 using Shared;
 
 namespace Server.Controllers;
@@ -8,17 +9,12 @@ namespace Server.Controllers;
 [Route("[controller]")]
 public class PaymentExecutionController(ILogger<PaymentExecutionController> logger) : ControllerBase
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        WriteIndented = true
-    };
-
     [HttpPost]
     public IActionResult Post(
         Payment payment,
         [FromHeader(Name = nameof(ServerStability))] ServerStability serverStability = ServerStability.Functional)
     {
-        var paymentJson = JsonSerializer.Serialize(payment, JsonSerializerOptions);
+        var paymentJson = JsonSerializer.Serialize(payment, Options.JsonSerializerOptions);
         if (serverStability is ServerStability.Flaky && DateTime.Now.Ticks % 2 == 0
             || serverStability is ServerStability.Failing)
         {

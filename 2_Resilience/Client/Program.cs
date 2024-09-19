@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 using Client.Configuration;
 using Client.Controllers;
 using MassTransit;
-using MassTransit.Configuration;
-using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 

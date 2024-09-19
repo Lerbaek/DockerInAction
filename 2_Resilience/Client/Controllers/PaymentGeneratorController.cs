@@ -1,10 +1,10 @@
-using System.Text;
 using AutoFixture;
 using Client.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Shared;
+using static System.Text.Json.JsonSerializer;
 
 namespace Client.Controllers;
 
@@ -22,7 +22,8 @@ public class PaymentGeneratorController(
     public async Task<IActionResult> Get([FromHeader(Name = nameof(ServerStability))] ServerStability serverStability = ServerStability.Functional)
     {
         var payment = _fixture.Create<Payment>();
-        await publish.Publish(payment);
+        logger.LogInformation("Sending payment: {Payment}", Serialize(payment));
+        await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
         return Ok();
     }
 }
