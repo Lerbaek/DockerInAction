@@ -18,6 +18,21 @@ builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("Rabbi
 builder.Services.AddMassTransit(configurator =>
 {
     configurator.AddConsumer<PaymentConsumer>();
+
+    configurator.AddConfigureEndpointsCallback((name, cfg) =>
+    {
+        if (cfg is IRabbitMqReceiveEndpointConfigurator rabbitMqConfigurator)
+        {
+            rabbitMqConfigurator.SetQuorumQueue();
+        }
+
+        cfg.UseMessageRetry(r => r.Exponential(
+            retryLimit: 10,
+            minInterval: TimeSpan.Zero,
+            maxInterval: TimeSpan.FromSeconds(2),
+            intervalDelta: TimeSpan.FromMilliseconds(500)));
+    });
+
     configurator.UsingRabbitMq((context, cfg) =>
     {
         cfg.ConfigureEndpoints(context);

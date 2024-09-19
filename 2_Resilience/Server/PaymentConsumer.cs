@@ -16,6 +16,7 @@ public class PaymentConsumer(ILogger<PaymentConsumer> logger) : IConsumer<Paymen
 
         var payment = context.Message;
         var paymentJson = JsonSerializer.Serialize(payment, Configuration.Options.JsonSerializerOptions);
+
         if (serverStability is ServerStability.Flaky && DateTime.Now.Ticks % 2 == 0
             || serverStability is ServerStability.Failing)
         {
