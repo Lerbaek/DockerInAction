@@ -14,7 +14,7 @@ public class ClientTests(IntegrationTestWebAppFactory factory)
     private readonly HttpClient _httpClient = factory.CreateClient();
 
     [Fact]
-    public async Task Should_ConsumePaymentInAsyncFlow_When_CallingDomesticPayments()
+    public async Task Get_RequestIsReceived_PaymentIsPublished()
     {
         // Arrange
         var timeoutSeconds = 10;
