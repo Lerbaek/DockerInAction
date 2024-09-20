@@ -8,7 +8,7 @@ using Shared;
 namespace IntegrationTests;
 
 [Collection(nameof(IntegrationTestWebAppFactoryCollection))]
-public class ClientServerTest(IntegrationTestWebAppFactory factory)
+public class ClientTests(IntegrationTestWebAppFactory factory)
 {
     private readonly ITestHarness _testHarness = factory.Services.GetRequiredService<ITestHarness>();
     private readonly HttpClient _httpClient = factory.CreateClient();
