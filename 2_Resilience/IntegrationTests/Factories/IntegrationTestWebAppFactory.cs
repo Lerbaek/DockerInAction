@@ -27,7 +27,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
     {
         builder.ConfigureTestServices(services =>
         {
-            DependencyInjectionTestingExtensions.AddMassTransitTestHarness(services);
+            services.AddMassTransitTestHarness();
         });
 
         var inMemoryConfig = new Dictionary<string, string?>
