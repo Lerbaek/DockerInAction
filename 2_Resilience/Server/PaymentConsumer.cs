@@ -21,7 +21,7 @@ public class PaymentConsumer(ILogger<PaymentConsumer> logger) : IConsumer<Paymen
             || serverStability is ServerStability.Failing)
         {
             logger.LogError("Payment failed: {Payment}", paymentJson);
-            throw new Exception();
+            throw new Exception("(\u256f\u00b0\u25a1\u00b0)\u256f \u253b\u2501\u253b");
         }
 
         logger.LogInformation("Payment succeeded: {Payment}", paymentJson);
