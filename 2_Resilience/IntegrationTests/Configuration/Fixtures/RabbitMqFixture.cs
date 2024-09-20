@@ -1,7 +1,7 @@
 ﻿using Testcontainers.RabbitMq;
 using Xunit;
 
-namespace IntegrationTests.Fixtures;
+namespace IntegrationTests.Configuration.Fixtures;
 
 public sealed class RabbitMqFixture : IAsyncLifetime
 {

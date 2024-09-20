@@ -1,54 +1,65 @@
 using System.Text.Json.Serialization;
 using MassTransit;
-using Server;
+using Server.Configuration;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Server;
 
-
-builder.Services.AddControllers().AddJsonOptions(options =>
+public class Program
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
-
-builder.Services.AddMassTransit(configurator =>
-{
-    configurator.AddConsumer<PaymentConsumer>();
-
-    configurator.AddConfigureEndpointsCallback((name, cfg) =>
+    public static void Main(string[] args)
     {
-        if (cfg is IRabbitMqReceiveEndpointConfigurator rabbitMqConfigurator)
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddControllers().AddJsonOptions(options =>
         {
-            rabbitMqConfigurator.SetQuorumQueue();
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
+
+        builder.Services.AddMassTransit(configurator =>
+        {
+            configurator.AddConsumer<PaymentConsumer>();
+
+            configurator.AddConfigureEndpointsCallback((name, cfg) =>
+            {
+                if (cfg is IRabbitMqReceiveEndpointConfigurator rabbitMqConfigurator)
+                {
+                    rabbitMqConfigurator.SetQuorumQueue();
+                }
+
+                cfg.UseMessageRetry(r => r.Exponential(
+                    retryLimit: builder
+                        .Configuration
+                        .GetSection("RabbitMq")
+                        .Get<RabbitMqOptions>()?
+                        .Retries ?? 10,
+                    minInterval: TimeSpan.Zero,
+                    maxInterval: TimeSpan.FromSeconds(2),
+                    intervalDelta: TimeSpan.FromMilliseconds(500)));
+            });
+
+            configurator.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
 
-        cfg.UseMessageRetry(r => r.Exponential(
-            retryLimit: 10,
-            minInterval: TimeSpan.Zero,
-            maxInterval: TimeSpan.FromSeconds(2),
-            intervalDelta: TimeSpan.FromMilliseconds(500)));
-    });
+        app.UseAuthorization();
 
-    configurator.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.ConfigureEndpoints(context);
-    });
-});
+        app.MapControllers();
 
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        app.Run();
+    }
 }
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+﻿using FluentAssertions;
+using IntegrationTests.Configuration.Factories;
 using MassTransit.Testing;
-using FluentAssertions;
-using IntegrationTests.Factories;
+using Microsoft.Extensions.DependencyInjection;
 using Shared;
+using Xunit;
 
-namespace IntegrationTests;
+namespace IntegrationTests.ClientTests;
 
-[Collection(nameof(IntegrationTestWebAppFactoryCollection))]
-public class ClientTests(IntegrationTestWebAppFactory factory)
+[Collection(nameof(ClientIntegrationTestWebAppFactoryCollection))]
+public class PaymentGeneratorControllerTests(ClientIntegrationTestWebAppFactory factory)
 {
     private readonly ITestHarness _testHarness = factory.Services.GetRequiredService<ITestHarness>();
     private readonly HttpClient _httpClient = factory.CreateClient();

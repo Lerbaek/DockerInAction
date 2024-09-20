@@ -1,6 +1,6 @@
 ﻿using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Images;
-using IntegrationTests.Fixtures;
+using IntegrationTests.Configuration.Fixtures;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,14 +8,18 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace IntegrationTests.Factories;
+namespace IntegrationTests.Configuration.Factories;
 
-public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class ServerIntegrationTestWebAppFactory : IntegrationTestWebAppFactory<Server.Program>;
+public class ClientIntegrationTestWebAppFactory : IntegrationTestWebAppFactory<Client.Program>;
+
+public abstract class IntegrationTestWebAppFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, IAsyncLifetime
+    where TEntryPoint : class
 {
     private readonly NetworkFixture _networkFixture;
     private readonly RabbitMqFixture _rabbitMqFixture;
 
-    public IntegrationTestWebAppFactory()
+    protected IntegrationTestWebAppFactory()
     {
         TestcontainersSettings.ResourceReaperImage = new DockerImage("remote-docker-hub.artifactory.danskenet.net/testcontainers/ryuk:0.5.1");
         
@@ -33,7 +37,8 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         var inMemoryConfig = new Dictionary<string, string?>
         {
             ["RabbitMq:Host"] = "127.0.0.1",
-            ["RabbitMq:Port"] = _rabbitMqFixture.Port.ToString()
+            ["RabbitMq:Port"] = _rabbitMqFixture.Port.ToString(),
+            ["RabbitMq:Retries"] = "2",
         };
 
         var configurationBuilder = new ConfigurationBuilder();

@@ -2,7 +2,7 @@
 using DotNet.Testcontainers.Networks;
 using Xunit;
 
-namespace IntegrationTests.Fixtures;
+namespace IntegrationTests.Configuration.Fixtures;
 
 public sealed class NetworkFixture : IAsyncLifetime
 {
