@@ -1,8 +1,6 @@
 using AutoFixture;
-using Client.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Shared;
 using static System.Text.Json.JsonSerializer;
 
@@ -11,8 +9,6 @@ namespace Client.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class PaymentGeneratorController(
-    HttpClient httpClient,
-    IOptions<ClientOptions> options,
     ILogger<PaymentGeneratorController> logger,
     IPublishEndpoint publish) : ControllerBase
 {

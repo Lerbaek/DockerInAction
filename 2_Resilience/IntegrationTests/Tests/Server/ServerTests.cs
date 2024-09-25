@@ -8,15 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Xunit;
 
-namespace IntegrationTests.ServerTests;
+namespace IntegrationTests.Tests.Server;
 
 [Collection(nameof(ServerIntegrationTestWebAppFactoryCollection))]
-public class PaymentConsumerTests : IAsyncDisposable
+public class ServerTests : IAsyncDisposable
 {
     private readonly Fixture _fixture = new();
     private readonly ITestHarness _testHarness;
 
-    public PaymentConsumerTests(ServerIntegrationTestWebAppFactory factory)
+    public ServerTests(ServerIntegrationTestWebAppFactory factory)
     {
         _testHarness = factory.Services.GetRequiredService<ITestHarness>();
         _testHarness.Start();
@@ -35,7 +35,7 @@ public class PaymentConsumerTests : IAsyncDisposable
         await _testHarness.Bus.Publish(
             payment,
             context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
-        
+
         // Assert
         var success = await _testHarness.Consumed.Any<Payment>(
             context =>
@@ -47,8 +47,5 @@ public class PaymentConsumerTests : IAsyncDisposable
         success.Should().BeTrue();
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        await _testHarness.Stop();
-    }
+    public async ValueTask DisposeAsync() => await _testHarness.Stop();
 }
