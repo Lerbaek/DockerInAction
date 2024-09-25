@@ -2,28 +2,38 @@ using System.Text.Json.Serialization;
 using Client.Controllers;
 using Server.Controllers;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Client;
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+public class Program
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
+    protected Program() {}
 
-builder.Services.AddHttpClient<PaymentGeneratorController>();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        builder.Services.AddHttpClient<PaymentGeneratorController>();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

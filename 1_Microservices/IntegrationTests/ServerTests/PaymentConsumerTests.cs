@@ -34,7 +34,7 @@ public class PaymentConsumerTests : IAsyncDisposable
         await _testHarness.Bus.Publish(
             payment,
             context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
-        
+
         // Assert
         var success = await _testHarness.Consumed.Any<Payment>(
             context =>
