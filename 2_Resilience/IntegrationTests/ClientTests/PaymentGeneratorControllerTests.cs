@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using IntegrationTests.Configuration.Collections;
 using IntegrationTests.Configuration.Factories;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;

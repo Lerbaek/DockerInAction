@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using IntegrationTests.Configuration.Collections;
 using IntegrationTests.Configuration.Factories;
 using MassTransit;
 using MassTransit.Testing;
