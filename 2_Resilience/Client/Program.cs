@@ -22,7 +22,7 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
-        builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
+        //builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
 
         builder.Services.AddMassTransit(configurator =>
         {
