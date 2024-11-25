@@ -1,24 +1,28 @@
-﻿using Testcontainers.RabbitMq;
+﻿using DotNet.Testcontainers.Containers;
+using IntegrationTests.Tests.EndToEnd;
+using Testcontainers.RabbitMq;
 using Xunit;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
-public sealed class RabbitMqFixture : IAsyncLifetime
+/// <summary>
+/// Create a RabbitMQ container with the management plugin enabled
+/// </summary>
+public sealed class RabbitMqFixture : ContainerFixture
 {
+    protected override IContainer Container => _rabbitMqContainer;
+
+    public ushort Port => _rabbitMqContainer.GetMappedPublicPort(5672);
+
+    public ushort ManagementPort => _rabbitMqContainer.GetMappedPublicPort(15672);
+
     private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder()
         .WithName($"testcontainers-rabbitmq-{Guid.NewGuid()}")
         .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:3.11.20-management")
+        .WithHostname(nameof(RabbitMQ))
+        .WithNetwork(Network)
+        .WithPortBinding(15672, assignRandomHostPort: true)
+        .WithUsername("guest")
+        .WithPassword("guest")
         .Build();
-
-    public async Task InitializeAsync()
-    {
-        await _rabbitMqContainer.StartAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _rabbitMqContainer.StopAsync();
-    }
-
-    public int Port => _rabbitMqContainer.GetMappedPublicPort(5672);
 }
