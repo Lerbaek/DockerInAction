@@ -1,8 +1,4 @@
-﻿using FluentAssertions;
-using IntegrationTests.Configuration.Collections;
-using IntegrationTests.Configuration.Factories;
-using IntegrationTests.Configuration.Fixtures;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
+﻿using IntegrationTests.Configuration.Collections;
 using Shared;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,13 +8,13 @@ namespace IntegrationTests.Tests.Testcontainers.EndToEnd;
 /// <summary>
 /// End-to-end test the entire solution using dynamically created images containers for the <see cref="Client"/>> and <see cref="Server"/>> services.
 /// </summary>
+/// <remarks>
+/// End-to-end test the entire solution using dynamically created images containers for the <see cref="Client"/>> and <see cref="Server"/>> services.
+/// </remarks>
 [Collection(nameof(EndToEndTestcontainersCollection))]
-public class EndToEndTests(
+public class EndToEndContainers(
     ITestOutputHelper output,
-    //NetworkFixture<EndToEndTests> networkFixture,
-    RabbitMqFixture<EndToEndTests> rabbitMqFixture,
-    ServerFixture<EndToEndTests> serverFixture,
-    ClientFixture<EndToEndTests> clientFixture)// : IAsyncLifetime
+    EndToEndTestFixtures fixtures)
 {
     [Theory]
     [InlineData(ServerStability.Functional, true)]
@@ -26,8 +22,8 @@ public class EndToEndTests(
     public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability, bool expectSuccess)
     {
         // Arrange
-        var hostname = clientFixture.Hostname;
-        var port = clientFixture.Port;
+        var hostname = fixtures.ClientFixture.Hostname;
+        var port = fixtures.ClientFixture.Port;
 
         var httpClient = new HttpClient
         {
@@ -36,7 +32,7 @@ public class EndToEndTests(
         httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
 
         var startTime = DateTime.Now;
-        var initialLogLength = await serverFixture.GetLogLength(startTime);
+        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
 
         // Act
         var response = await httpClient.GetAsync("/PaymentGenerator");
@@ -44,12 +40,6 @@ public class EndToEndTests(
         output.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
 
         // Assert
-        serverFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
+        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
     }
-
-    ///// <inheritdoc/>
-    //public async Task InitializeAsync() => await NetworkFixture<EndToEndTests>.Instance.InitializeAsync();
-
-    ///// <inheritdoc/>
-    //public async Task DisposeAsync() => await NetworkFixture<EndToEndTests>.Instance.DisposeAsync();
 }

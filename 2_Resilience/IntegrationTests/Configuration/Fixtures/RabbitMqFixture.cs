@@ -1,27 +1,27 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
+﻿using System.ComponentModel;
+using Docker.DotNet.Models;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Networks;
 using IntegrationTests.Configuration.Factories;
 using Testcontainers.RabbitMq;
 using Xunit;
+using IContainer = DotNet.Testcontainers.Containers.IContainer;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
 /// <summary>
 /// Create a RabbitMQ container with the management plugin enabled
 /// </summary>
-public sealed class RabbitMqFixture<T> : ContainerFixture<T>
+public class RabbitMqFixture : ContainerFixture
 {
-    private RabbitMqContainer? _rabbitMqContainer;
-
-    protected override IContainer Container => _rabbitMqContainer ??= new RabbitMqBuilder()
+    protected override IContainer BuildContainer(INetwork network) => new RabbitMqBuilder()
             .WithName($"testcontainers-rabbitmq-{Guid.NewGuid()}")
             .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:3.11.20-management")
             .WithHostname(nameof(RabbitMQ))
             .WithPortBinding(15672, assignRandomHostPort: true)
             .WithUsername("guest")
             .WithPassword("guest")
-            .WithNetwork(Network)
+            .WithNetwork(network)
             .Build();
 
     public string Hostname => Container.Hostname;

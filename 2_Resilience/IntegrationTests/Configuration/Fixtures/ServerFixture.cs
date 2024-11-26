@@ -9,23 +9,18 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
-public sealed class ServerFixture<T>() : ImageFixture<T>(nameof(Server))
+public sealed class ServerFixture() : ImageFixture(nameof(Server))
 {
     const string ExpectedSuccessMessage = "Payment succeeded";
     const string ExpectedFailureMessage = "Payment failed";
 
     private IContainer? _container;
 
-    protected override IContainer Container
-    {
-        get
-        {
-            return _container ??= CreateRabbitMqConfiguredContainer(Image, Network)
-                .WithHostname(nameof(Server))
-                .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(".*Bus started.*"))
-                .Build();
-        }
-    }
+    protected override IContainer BuildContainer(INetwork network) =>
+        CreateRabbitMqConfiguredContainerBuilder(Image, network)
+            .WithHostname(nameof(Server))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(".*Bus started.*"))
+            .Build();
 
     private async Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since) => await Container.GetLogsAsync(since, timestampsEnabled: false);
     

@@ -1,15 +1,14 @@
-﻿using DotNet.Testcontainers.Containers;
+﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using IntegrationTests.Configuration.Factories;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
-public sealed class ClientFixture<T>() : ImageFixture<T>(nameof(Client))
+public sealed class ClientFixture() : ImageFixture(nameof(Client))
 {
-    private IContainer? _container;
-
-    protected override IContainer Container =>
-        _container ??= CreateRabbitMqConfiguredContainer(Image, Network)
+    protected override IContainer BuildContainer(INetwork network) =>
+        CreateRabbitMqConfiguredContainerBuilder(Image, network)
             .WithPortBinding(8080, assignRandomHostPort: true)
             .WithHostname(nameof(Client))
             .Build();

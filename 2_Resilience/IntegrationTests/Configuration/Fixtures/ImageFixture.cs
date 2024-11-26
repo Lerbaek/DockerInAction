@@ -6,7 +6,7 @@ using Testcontainers.RabbitMq;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
-public abstract class ImageFixture<T>(string projectName) : ContainerFixture<T>
+public abstract class ImageFixture(string projectName) : ContainerFixture
 {
     protected readonly IFutureDockerImage Image = new ImageFromDockerfileBuilder()
         .WithName($"{projectName.ToLowerInvariant()}-{Guid.NewGuid()}")
@@ -14,15 +14,15 @@ public abstract class ImageFixture<T>(string projectName) : ContainerFixture<T>
         .WithDockerfile($"{projectName}/Dockerfile")
         .Build();
 
-    public override async Task InitializeAsync()
+    public override async Task InitializeAsync(INetwork network)
     {
         await Image.CreateAsync();
-        await base.InitializeAsync();
+        await base.InitializeAsync(network);
     }
 
-    public override async Task DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
-        await Image.DisposeAsync();
         await base.DisposeAsync();
+        await Image.DisposeAsync();
     }
 }

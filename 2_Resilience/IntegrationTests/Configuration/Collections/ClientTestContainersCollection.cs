@@ -8,7 +8,4 @@ namespace IntegrationTests.Configuration.Collections;
 
 /// <inheritdoc cref="ClientTestHarnessCollection"/>
 [CollectionDefinition(nameof(ClientTestcontainersCollection))]
-public sealed class ClientTestcontainersCollection
-    : ICollectionFixture<ClientIntegrationTestWebAppFactory>,
-      ICollectionFixture<RabbitMqFixture<ClientTests>>,
-      ICollectionFixture<ServerFixture<ClientTests>>;
+public sealed class ClientTestcontainersCollection : ICollectionFixture<ClientTestFixtures>;

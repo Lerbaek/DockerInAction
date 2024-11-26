@@ -5,8 +5,6 @@ using Client.Controllers;
 using Docker.DotNet.Models;
 using FluentAssertions;
 using IntegrationTests.Configuration.Collections;
-using IntegrationTests.Configuration.Factories;
-using IntegrationTests.Configuration.Fixtures;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,22 +18,17 @@ namespace IntegrationTests.Tests.Testcontainers.Client;
 [Collection(nameof(ClientTestcontainersCollection))]
 public class ClientTests
 {
-    private readonly ServerFixture<ClientTests> _serverFixture;
-
     private readonly ITestOutputHelper _output;
-    private readonly ClientIntegrationTestWebAppFactory _factory;
+    private readonly ClientTestFixtures _fixtures;
 
     public ClientTests(ITestOutputHelper output,
-        ClientIntegrationTestWebAppFactory factory,
-        RabbitMqFixture<ClientTests> rabbitMqFixture,
-        ServerFixture<ClientTests> serverFixture)
+        ClientTestFixtures fixtures)
     {
         _output = output;
-        _factory = factory;
-        _serverFixture = serverFixture;
-
-        _factory.RabbitMqOptions.Port = rabbitMqFixture.Port;
-        _factory.RabbitMqOptions.Host = rabbitMqFixture.Hostname;
+        _fixtures = fixtures;
+        
+        fixtures.Factory.RabbitMqOptions.Port = fixtures.RabbitMqFixture.Port;
+        fixtures.Factory.RabbitMqOptions.Host = fixtures.RabbitMqFixture.Hostname;
     }
 
     [Theory]
@@ -44,16 +37,16 @@ public class ClientTests
     public async Task HttpGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool expectSuccess)
     {
         // Arrange
-        var httpClient = _factory.CreateClient();
+        var httpClient = _fixtures.Factory.CreateClient();
         httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
         var startTime = DateTime.Now;
-        var initialLogLength = await _serverFixture.GetLogLength(startTime);
+        var initialLogLength = await _fixtures.ServerFixture.GetLogLength(startTime);
 
         // Act
-        var response = await httpClient.GetAsync("/PaymentGenerator");
+        await httpClient.GetAsync("/PaymentGenerator");
 
         // Assert
-        _serverFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
+        _fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
     }
 
     [Theory]
@@ -63,9 +56,9 @@ public class ClientTests
     {
         // Arrange
         var startTime = DateTime.Now;
-        var initialLogLength = await _serverFixture.GetLogLength(startTime);
+        var initialLogLength = await _fixtures.ServerFixture.GetLogLength(startTime);
 
-        using var scope = _factory.Services.CreateScope();
+        using var scope = _fixtures.Factory.Services.CreateScope();
         var publish = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
         
         // Act
@@ -73,6 +66,6 @@ public class ClientTests
         await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
 
         // Assert
-        _serverFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
+        _fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
     }
 }

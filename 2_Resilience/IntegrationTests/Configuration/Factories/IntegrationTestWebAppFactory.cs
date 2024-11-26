@@ -15,27 +15,6 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests.Configuration.Factories;
 
-public class NetworkFixture<T> : IAsyncLifetime
-{
-    public NetworkFixture()
-    {
-        Instance = this;
-    }
-
-    public static NetworkFixture<T> Instance { get; private set; } = new();
-
-    public INetwork Network { get; } = CreateNetwork(typeof(T).Name);
-
-    public static INetwork CreateNetwork(string identifier) => new NetworkBuilder()
-        .WithName($"testcontainers-microservices-{Guid.NewGuid()}")
-        .WithCleanUp(true)
-        .Build();
-
-    public Task InitializeAsync() => Task.CompletedTask;//await Network.CreateAsync();
-
-    public Task DisposeAsync() => Task.CompletedTask;
-}
-
 public abstract class IntegrationTestWebAppFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
 {
@@ -76,10 +55,5 @@ public abstract class IntegrationTestWebAppFactory<TEntryPoint> : WebApplication
             {
                 config.AddInMemoryCollection(inMemoryConfig);
             });
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await base.DisposeAsync();
     }
 }
