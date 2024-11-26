@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Xunit;
 
-namespace IntegrationTests.Tests.Client;
+namespace IntegrationTests.Tests.TestHarness.Client;
 
-[Collection(nameof(ClientIntegrationTestWebAppFactoryCollection))]
+[Collection(nameof(ClientTestHarnessCollection))]
 public class ClientTests : IAsyncDisposable
 {
     private readonly ITestHarness _testHarness;
@@ -16,6 +16,7 @@ public class ClientTests : IAsyncDisposable
 
     public ClientTests(ClientIntegrationTestWebAppFactory factory)
     {
+        factory.UseTestHarness();
         _testHarness = factory.Services.GetRequiredService<ITestHarness>();
         _httpClient = factory.CreateClient();
         _testHarness.Start();

@@ -1,5 +1,7 @@
-﻿using DotNet.Testcontainers.Containers;
-using IntegrationTests.Tests.EndToEnd;
+﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
+using IntegrationTests.Configuration.Factories;
 using Testcontainers.RabbitMq;
 using Xunit;
 
@@ -8,21 +10,23 @@ namespace IntegrationTests.Configuration.Fixtures;
 /// <summary>
 /// Create a RabbitMQ container with the management plugin enabled
 /// </summary>
-public sealed class RabbitMqFixture : ContainerFixture
+public sealed class RabbitMqFixture<T> : ContainerFixture<T>
 {
-    protected override IContainer Container => _rabbitMqContainer;
+    private RabbitMqContainer? _rabbitMqContainer;
 
-    public ushort Port => _rabbitMqContainer.GetMappedPublicPort(5672);
+    protected override IContainer Container => _rabbitMqContainer ??= new RabbitMqBuilder()
+            .WithName($"testcontainers-rabbitmq-{Guid.NewGuid()}")
+            .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:3.11.20-management")
+            .WithHostname(nameof(RabbitMQ))
+            .WithPortBinding(15672, assignRandomHostPort: true)
+            .WithUsername("guest")
+            .WithPassword("guest")
+            .WithNetwork(Network)
+            .Build();
 
-    public ushort ManagementPort => _rabbitMqContainer.GetMappedPublicPort(15672);
+    public string Hostname => Container.Hostname;
 
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder()
-        .WithName($"testcontainers-rabbitmq-{Guid.NewGuid()}")
-        .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:3.11.20-management")
-        .WithHostname(nameof(RabbitMQ))
-        .WithNetwork(Network)
-        .WithPortBinding(15672, assignRandomHostPort: true)
-        .WithUsername("guest")
-        .WithPassword("guest")
-        .Build();
+    public ushort Port => Container.GetMappedPublicPort(5672);
+
+    public ushort ManagementPort => Container.GetMappedPublicPort(15672);
 }

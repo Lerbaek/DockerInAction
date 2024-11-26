@@ -11,5 +11,5 @@ namespace IntegrationTests.Configuration.Collections;
 /// <remarks>
 /// For more details go to: <see href="https://xunit.net/docs/shared-context"/>
 /// </remarks>
-[CollectionDefinition(nameof(ClientIntegrationTestWebAppFactoryCollection))]
-public sealed class ClientIntegrationTestWebAppFactoryCollection : ICollectionFixture<ClientIntegrationTestWebAppFactory>;
+[CollectionDefinition(nameof(ClientTestHarnessCollection))]
+public sealed class ClientTestHarnessCollection : ICollectionFixture<ClientIntegrationTestWebAppFactory>;

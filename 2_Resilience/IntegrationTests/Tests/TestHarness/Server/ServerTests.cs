@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Xunit;
 
-namespace IntegrationTests.Tests.Server;
+namespace IntegrationTests.Tests.TestHarness.Server;
 
-[Collection(nameof(ServerIntegrationTestWebAppFactoryCollection))]
+[Collection(nameof(ServerTestHarnessCollection))]
 public class ServerTests : IAsyncDisposable
 {
     private readonly Fixture _fixture = new();
@@ -18,6 +18,7 @@ public class ServerTests : IAsyncDisposable
 
     public ServerTests(ServerIntegrationTestWebAppFactory factory)
     {
+        factory.UseTestHarness();
         _testHarness = factory.Services.GetRequiredService<ITestHarness>();
         _testHarness.Start();
     }

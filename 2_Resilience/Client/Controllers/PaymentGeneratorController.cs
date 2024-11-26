@@ -20,6 +20,6 @@ public class PaymentGeneratorController(
         var payment = _fixture.Create<Payment>();
         logger.LogInformation("Sending payment: {Payment}", Serialize(payment));
         await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
-        return Ok();
+        return Ok(payment);
     }
 }

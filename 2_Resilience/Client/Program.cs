@@ -22,20 +22,18 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
-        //builder.Services.AddOptions<RabbitMqTransportOptions>().BindConfiguration("RabbitMq");
 
         builder.Services.AddMassTransit(configurator =>
         {
-            //var options = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqOptions>();
-            configurator.UsingRabbitMq(//(context, cfg) =>
-                //{
-                //    //cfg.Host(options.Host, 5672, "/", c =>
-                //    //{
-                //    //    c.Username(options.User);
-                //    //    c.Password(options.Password);
-                //    //});
-                //}
-            );
+            var options = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqTransportOptions>();
+            if (options is null) return;
+
+            configurator.UsingRabbitMq((context, cfg) =>
+                cfg.Host(options.Host, options.Port, "/", c =>
+                {
+                    c.Username(options.User);
+                    c.Password(options.Pass);
+                }));
         });
 
         var app = builder.Build();
