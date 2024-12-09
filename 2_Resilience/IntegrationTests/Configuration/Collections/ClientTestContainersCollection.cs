@@ -1,7 +1,4 @@
-﻿using IntegrationTests.Configuration.Factories;
-using IntegrationTests.Configuration.Fixtures;
-using IntegrationTests.Tests.Testcontainers.Client;
-using Server.Configuration;
+﻿using IntegrationTests.Tests.Testcontainers.Client;
 using Xunit;
 
 namespace IntegrationTests.Configuration.Collections;

@@ -16,7 +16,7 @@ services:
       - "8080"
       - "8081"
   rabbitmq:
-    image: remote-docker-hub.artifactory.danskenet.net/rabbitmq:3.11.20-management
+    image: rabbitmq:3.11.20-management
     ports:
       - "5672:5672"
       - "15672:15672"

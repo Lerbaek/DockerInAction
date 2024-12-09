@@ -1,5 +1,3 @@
-﻿using Xunit.Abstractions;
-
-namespace IntegrationTests.Configuration.Factories;
+﻿namespace IntegrationTests.Configuration.Factories;
 
 public class ServerIntegrationTestWebAppFactory : IntegrationTestWebAppFactory<Server.Program>;

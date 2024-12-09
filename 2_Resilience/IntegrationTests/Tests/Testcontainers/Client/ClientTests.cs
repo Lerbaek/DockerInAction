@@ -1,14 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices.JavaScript;
-using AutoFixture;
-using Client.Controllers;
-using Docker.DotNet.Models;
-using FluentAssertions;
+﻿using AutoFixture;
 using IntegrationTests.Configuration.Collections;
 using MassTransit;
-using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Shared;
 using Xunit;
 using Xunit.Abstractions;

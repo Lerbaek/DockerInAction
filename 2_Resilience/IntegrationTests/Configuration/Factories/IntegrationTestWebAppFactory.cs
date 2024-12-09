@@ -1,17 +1,10 @@
-﻿using Client.Controllers;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
+﻿using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Images;
-using DotNet.Testcontainers.Networks;
-using IntegrationTests.Configuration.Fixtures;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Configuration.Factories;
 
@@ -26,7 +19,7 @@ public abstract class IntegrationTestWebAppFactory<TEntryPoint> : WebApplication
 
     protected IntegrationTestWebAppFactory()
     {
-        TestcontainersSettings.ResourceReaperImage = new DockerImage("remote-docker-hub.artifactory.danskenet.net/testcontainers/ryuk:0.5.1");
+        TestcontainersSettings.ResourceReaperImage = new DockerImage("testcontainers/ryuk:0.5.1");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

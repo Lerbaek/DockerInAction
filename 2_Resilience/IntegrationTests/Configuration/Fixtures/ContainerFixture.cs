@@ -4,9 +4,6 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using DotNet.Testcontainers.Networks;
-using IntegrationTests.Configuration.Factories;
-using Xunit;
-using Guid = System.Guid;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
@@ -16,8 +13,9 @@ public abstract class ContainerFixture : IAsyncDisposable
     
     static ContainerFixture()
     {
-        // Set the resource reaper image to on resolvable by a Danske Bank machine.
-        TestcontainersSettings.ResourceReaperImage = new DockerImage("remote-docker-hub.artifactory.danskenet.net/testcontainers/ryuk:0.5.1");
+        // When run from a company machine, set the resource reaper image to one from the internal image repository.
+        // When not, this line is not needed.
+        TestcontainersSettings.ResourceReaperImage = new DockerImage("testcontainers/ryuk:0.5.1");
     }
 
     protected abstract IContainer BuildContainer(INetwork network);

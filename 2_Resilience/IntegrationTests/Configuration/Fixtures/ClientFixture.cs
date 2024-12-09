@@ -1,7 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
+﻿using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
-using IntegrationTests.Configuration.Factories;
 
 namespace IntegrationTests.Configuration.Fixtures;
 

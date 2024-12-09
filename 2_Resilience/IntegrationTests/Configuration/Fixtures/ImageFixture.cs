@@ -1,8 +1,6 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Images;
 using DotNet.Testcontainers.Networks;
-using IntegrationTests.Configuration.Factories;
-using Testcontainers.RabbitMq;
 
 namespace IntegrationTests.Configuration.Fixtures;
 

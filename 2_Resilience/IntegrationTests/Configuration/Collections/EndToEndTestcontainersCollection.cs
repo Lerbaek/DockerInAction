@@ -1,6 +1,4 @@
-﻿using IntegrationTests.Configuration.Factories;
-using IntegrationTests.Configuration.Fixtures;
-using IntegrationTests.Tests.Testcontainers.EndToEnd;
+﻿using IntegrationTests.Tests.Testcontainers.EndToEnd;
 using Xunit;
 
 namespace IntegrationTests.Configuration.Collections;
