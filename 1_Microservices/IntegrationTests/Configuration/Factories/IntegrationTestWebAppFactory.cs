@@ -17,7 +17,7 @@ public abstract class IntegrationTestWebAppFactory<TEntryPoint> : WebApplication
 
     protected IntegrationTestWebAppFactory()
     {
-        TestcontainersSettings.ResourceReaperImage = new DockerImage("remote-docker-hub.artifactory.danskenet.net/testcontainers/ryuk:0.5.1");
+        TestcontainersSettings.ResourceReaperImage = new DockerImage("testcontainers/ryuk:0.5.1");
         _rabbitMqFixture = new RabbitMqFixture();
     }
 
