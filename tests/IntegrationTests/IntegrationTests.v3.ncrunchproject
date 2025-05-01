@@ -1,0 +1,12 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <AdditionalFilesToIncludeForProject>
+      <Value>..\..\Microservices.sln</Value>
+      <Value>..\..\src\Client\Dockerfile</Value>
+      <Value>..\..\src\Server\Dockerfile</Value>
+      <Value>..\..\src\**.csproj</Value>
+      <Value>..\..\src\**.cs</Value>
+    </AdditionalFilesToIncludeForProject>
+    <ImplicitProjectDependencyPathsRelativeToSolutionDirectory />
+  </Settings>
+</ProjectConfiguration>
