@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using IntegrationTests.Configuration.Collections;
+using IntegrationTests.Tests.Testcontainers.Fixtures;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
@@ -8,40 +9,81 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.Client;
 
+/// <summary>
+/// Integration tests for the Client application using Testcontainers.
+/// <para>
+/// These tests use a hybrid approach where:
+/// </para>
+/// <list type="bullet">
+/// <item>The Client application runs in-process via WebApplicationFactory</item>
+/// <item>The Server application runs in a Docker container</item>
+/// <item>RabbitMQ runs in a Docker container</item>
+/// </list>
+/// <para>
+/// This approach offers faster test execution and easier debugging compared to full end-to-end 
+/// container tests, while still testing integration with containerized dependencies.
+/// </para>
+/// </summary>
+/// <param name="output">Output helper for writing to test logs.</param>
+/// <param name="fixtures">Test fixtures providing access to test dependencies.</param>
 [Collection(nameof(ClientTestcontainersCollection))]
-public class ClientTests
+public class ClientTests(
+    ITestOutputHelper output,
+    ClientTestFixtures fixtures)
 {
-    private readonly ITestOutputHelper _output;
-    private readonly ClientTestFixtures _fixtures;
-
-    public ClientTests(ITestOutputHelper output,
-        ClientTestFixtures fixtures)
-    {
-        _output = output;
-        _fixtures = fixtures;
-        
-        fixtures.Factory.RabbitMqOptions.Port = fixtures.RabbitMqFixture.Port;
-        fixtures.Factory.RabbitMqOptions.Host = fixtures.RabbitMqFixture.Hostname;
-    }
-
+    /// <summary>
+    /// Tests that HTTP GET requests to the PaymentGenerator endpoint correctly interact with the Server.
+    /// <para>
+    /// The test verifies that:
+    /// </para>
+    /// <list type="bullet">
+    /// <item>The Client application successfully handles HTTP requests</item>
+    /// <item>The Client forwards the requests to the Server via RabbitMQ</item>
+    /// <item>The Server processes the payment according to the specified stability mode</item>
+    /// <item>The Server logs the expected success/failure messages</item>
+    /// </list>
+    /// </summary>
+    /// <param name="serverStability">Controls the Server's behavior: Functional (success), Flaky (inconsistent), or Failing (error).</param>
+    /// <param name="expectSuccess">The expected outcome: true for success, false for failure, null for undetermined.</param>
     [Theory]
     [InlineData(ServerStability.Functional, true)]
+    [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task HttpGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool expectSuccess)
+    public async Task HttpGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
     {
         // Arrange
-        var httpClient = _fixtures.Factory.CreateClient();
+        var httpClient = fixtures.Factory.CreateClient();
         httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
         var startTime = DateTime.Now;
-        var initialLogLength = await _fixtures.ServerFixture.GetLogLength(startTime);
+        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
 
         // Act
         await httpClient.GetAsync("/PaymentGenerator");
 
         // Assert
-        _fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
+        fixtures.ServerFixture.AssertServerLogSuccess(
+            expectSuccess,
+            startTime,
+            initialLogLength,
+            output);
     }
 
+    /// <summary>
+    /// Tests that direct message publishing via MassTransit correctly integrates with the Server.
+    /// <para>
+    /// This test bypasses the HTTP layer and directly tests the messaging integration by:
+    /// </para>
+    /// <list type="bullet">
+    /// <item>Publishing a Payment message directly to the message bus registered in the Client</item>
+    /// <item>Verifying that the Server receives and processes the message</item>
+    /// <item>Checking that the Server logs the expected success/failure messages</item>
+    /// </list>
+    /// <para>
+    /// This approach isolates the messaging integration from HTTP concerns.
+    /// </para>
+    /// </summary>
+    /// <param name="serverStability">Controls the Server's behavior: Functional (success) or Failing (error).</param>
+    /// <param name="expectSuccess">The expected outcome: true for success or false for failure.</param>
     [Theory]
     [InlineData(ServerStability.Functional, true)]
     [InlineData(ServerStability.Failing, false)]
@@ -49,16 +91,16 @@ public class ClientTests
     {
         // Arrange
         var startTime = DateTime.Now;
-        var initialLogLength = await _fixtures.ServerFixture.GetLogLength(startTime);
+        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
 
-        using var scope = _fixtures.Factory.Services.CreateScope();
+        using var scope = fixtures.Factory.Services.CreateScope();
         var publish = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
-        
+
         // Act
         var payment = new Fixture().Create<Payment>();
         await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
 
         // Assert
-        _fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, _output);
+        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
     }
 }

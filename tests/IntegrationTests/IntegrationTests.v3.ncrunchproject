@@ -7,6 +7,9 @@
       <Value>..\..\src\**.csproj</Value>
       <Value>..\..\src\**.cs</Value>
     </AdditionalFilesToIncludeForProject>
+    <HiddenComponentWarnings>
+      <Value>AspNetTestHostCompatibility</Value>
+    </HiddenComponentWarnings>
     <ImplicitProjectDependencyPathsRelativeToSolutionDirectory />
   </Settings>
 </ProjectConfiguration>
