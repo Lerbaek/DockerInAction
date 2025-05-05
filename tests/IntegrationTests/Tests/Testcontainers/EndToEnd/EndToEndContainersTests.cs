@@ -46,29 +46,17 @@ public class EndToEndContainersTests(
     [InlineData(ServerStability.Functional, true)]
     [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
+    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability,
+        bool? expectSuccess)
     {
-        // Arrange
-        var hostname = fixtures.ClientFixture.Hostname;
-        var port = fixtures.ClientFixture.Port;
+        // Arrange: Set up the Client and Server containers and configure RabbitMQ.
+        // Useful methods: fixtures.ClientFixture, fixtures.ServerFixture, fixtures.RabbitMqFixture
 
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri($"http://{hostname}:{port}"),
-        };
+        // Act: Simulate an end-to-end workflow involving the Client, Server, and RabbitMQ.
+        // Useful methods: httpClient.GetAsync(), publish.Publish()
 
-        // Add a custom header to control the Server's stability mode
-        httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
-
-        var startTime = DateTime.Now;
-        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
-
-        // Act
-        var response = await httpClient.GetAsync("/PaymentGenerator");
-
-        output.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
-
-        // Assert
-        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
+        // Assert: Verify that the Client and Server interacted correctly and logged the expected messages.
+        // Useful methods: fixtures.ServerFixture.AssertServerLogSuccess()
     }
 }
+    

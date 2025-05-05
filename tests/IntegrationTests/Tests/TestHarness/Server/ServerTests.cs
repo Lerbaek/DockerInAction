@@ -62,24 +62,27 @@ public class ServerTests : IAsyncDisposable
     [InlineData(ServerStability.Failing, true)]
     public async Task Consume_PaymentIsConsumed_ObeysStabilityInstruction(ServerStability serverStability, bool exceptionExpected)
     {
-        // Arrange
-        var payment = _fixture.Create<Payment>();
-        var startTime = DateTime.Now.ToUniversalTime();
+        // Arrange: Set up the test environment, including the message bus and stability settings.
+        // Useful methods: _fixture.Create<Payment>(), _testHarness.Bus.Publish()
 
-        // Act
-        await _testHarness.Bus.Publish(
-            payment,
-            context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
+        // Act: Publish a Payment message with the specified stability header.
+        // Useful methods: context.Headers.Set(nameof(ServerStability), $"{serverStability}")
 
-        // Assert
-        var success = await _testHarness.Consumed.Any<Payment>(
-            context =>
-                // Only consider at messages newer than startTime
-                context.StartTime.ToUniversalTime() > startTime
-                &&
-                exceptionExpected == context.Exception is { });
+        // Assert: Verify that the message was consumed and processed as expected.
+        // Useful methods: _testHarness.Consumed.Any<Payment>(), context.Exception
+    }
 
-        success.Should().BeTrue();
+    [Fact]
+    public async Task ServerProcessesPaymentCorrectly()
+    {
+        // Arrange: Set up the server's dependencies and mock any required services.
+        // Useful methods: Substitute.For<ILogger>(), _fixtures.Factory.ConfigureServices()
+
+        // Act: Simulate a payment processing request to the server.
+        // Useful methods: httpClient.PostAsync(), _fixtures.ClientFixture.Hostname
+
+        // Assert: Verify that the server processed the payment and logged the expected messages.
+        // Useful methods: _fixtures.Factory.Logger.Received().CallToLog()
     }
 
     /// <summary>

@@ -70,48 +70,13 @@ public class ServerTests
         ServerStability serverStability,
         bool? expectSuccess)
     {
-        // Arrange
-        var hostname = _fixtures.ClientFixture.Hostname;
-        var port = _fixtures.ClientFixture.Port;
+        // Arrange: Set up the HTTP client and configure the Server's stability mode.
+        // Useful methods: _fixtures.ClientFixture.Hostname, _fixtures.ClientFixture.Port, httpClient.DefaultRequestHeaders.Add()
 
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri($"http://{hostname}:{port}"),
-        };
+        // Act: Send an HTTP GET request to the PaymentGenerator endpoint.
+        // Useful methods: httpClient.GetAsync()
 
-        // Add a custom header to control the Server's stability mode
-        httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
-
-        using var scope = _fixtures.Factory.Services.CreateScope();
-
-        // Get the expected log messages based on the stability mode
-        var validLogMessages = ServerFixture.GetValidLogMessages(expectSuccess);
-
-        // Set up a flag to track whether the consumer logs a message
-        var consumerLogged = false;
-
-        // Keep track of whether the consumer has logged the message of interest
-        _fixtures.Factory.SetLogAction(
-            condition: logMsg => logMsg.StartsWith("Payment"),
-            action: () => consumerLogged = true);
-
-        // Act
-        var response = await httpClient.GetAsync("/PaymentGenerator");
-        _output.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
-
-        // Wait for the consumer to log a message
-        SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(10));
-
-        // Assert
-        // Verify that the Server logged the expected messages
-        _fixtures.Factory.Logger
-            .Received().CallToLog(
-                Arg.Any<LogLevel>(),
-                verifier =>
-                {
-                    return Array.Exists(
-                        validLogMessages,
-                        validLogMessage => verifier.OriginalFormat.StartsWith(validLogMessage));
-                });
+        // Assert: Verify that the Server logged the expected messages.
+        // Useful methods: _fixtures.Factory.Logger.Received().CallToLog(), ServerFixture.GetValidLogMessages()
     }
 }

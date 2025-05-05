@@ -56,15 +56,14 @@ public class ClientTests : IAsyncDisposable
     [Fact]
     public async Task Get_RequestIsReceived_PaymentIsPublished()
     {
-        // Arrange
+        // Arrange: Set up the HTTP client and test harness for the test.
+        // Useful methods: factory.UseTestHarness(), _testHarness.Start()
 
-        // Act
-        var response = await _httpClient.GetAsync("/PaymentGenerator");
+        // Act: Send an HTTP GET request to the PaymentGenerator endpoint.
+        // Useful methods: _httpClient.GetAsync()
 
-        // Assert
-        response.Invoking(r => r.EnsureSuccessStatusCode()).Should().NotThrow();
-        var consumed = await _testHarness.Published.Any<Payment>();
-        consumed.Should().BeTrue();
+        // Assert: Verify that a Payment message was published and the HTTP response was successful.
+        // Useful methods: _testHarness.Published.Any<Payment>(), response.EnsureSuccessStatusCode()
     }
 
     /// <summary>

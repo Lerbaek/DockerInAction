@@ -51,21 +51,14 @@ public class ClientTests(
     [InlineData(ServerStability.Failing, false)]
     public async Task HttpGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
     {
-        // Arrange
-        var httpClient = fixtures.Factory.CreateClient();
-        httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
-        var startTime = DateTime.Now;
-        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
+        // Arrange: Create an HTTP client and set up headers for the request.
+        // Useful methods: fixtures.Factory.CreateClient(), httpClient.DefaultRequestHeaders.Add()
 
-        // Act
-        await httpClient.GetAsync("/PaymentGenerator");
+        // Act: Send an HTTP GET request to the PaymentGenerator endpoint.
+        // Useful methods: httpClient.GetAsync("/PaymentGenerator")
 
-        // Assert
-        fixtures.ServerFixture.AssertServerLogSuccess(
-            expectSuccess,
-            startTime,
-            initialLogLength,
-            output);
+        // Assert: Verify that the server logs contain the expected messages.
+        // Useful methods: fixtures.ServerFixture.AssertServerLogSuccess()
     }
 
     /// <summary>
@@ -90,18 +83,13 @@ public class ClientTests(
     [InlineData(ServerStability.Failing, false)]
     public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
     {
-        // Arrange
-        var startTime = DateTime.Now;
-        var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
+        // Arrange: Set up the test environment, including the message bus and log tracking.
+        // Useful methods: fixtures.Factory.Services.CreateScope(), fixtures.ServerFixture.GetLogLength()
 
-        using var scope = fixtures.Factory.Services.CreateScope();
-        var publish = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        // Act: Publish a Payment message directly to the message bus.
+        // Useful methods: publish.Publish()
 
-        // Act
-        var payment = new Fixture().Create<Payment>();
-        await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
-
-        // Assert
-        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
+        // Assert: Verify that the server logs contain the expected messages.
+        // Useful methods: fixtures.ServerFixture.AssertServerLogSuccess()
     }
 }
