@@ -23,20 +23,20 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
 
-        builder.Services.AddMassTransit(configurator =>
-        {
-            configurator.DisableUsageTelemetry();
+        //builder.Services.AddMassTransit(configurator =>
+        //{
+        //    configurator.DisableUsageTelemetry();
 
-            var options = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqTransportOptions>();
-            if (options is null) return;
+        //    var options = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqTransportOptions>();
+        //    if (options is null) return;
 
-            configurator.UsingRabbitMq((context, cfg) =>
-                cfg.Host(options.Host, options.Port, "/", c =>
-                {
-                    c.Username(options.User);
-                    c.Password(options.Pass);
-                }));
-        });
+        //    configurator.UsingRabbitMq((context, cfg) =>
+        //        cfg.Host(options.Host, options.Port, "/", c =>
+        //        {
+        //            c.Username(options.User);
+        //            c.Password(options.Pass);
+        //        }));
+        //});
 
         var app = builder.Build();
 
