@@ -40,12 +40,13 @@ public class EndToEndContainersTests(
     /// <item>The Server logs the expected success or failure messages based on the specified stability mode</item>
     /// </list>
     /// </summary>
-    /// <param name="serverStability">Controls the Server's behavior: Functional (success) or Failing (error).</param>
+    /// <param name="serverStability">Controls the Server's behavior: Functional (success), Flaky (inconsistent), or Failing (error).</param>
     /// <param name="expectSuccess">The expected outcome: true for success, false for failure.</param>
     [Theory]
     [InlineData(ServerStability.Functional, true)]
+    [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability, bool expectSuccess)
+    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
     {
         // Arrange
         var hostname = fixtures.ClientFixture.Hostname;

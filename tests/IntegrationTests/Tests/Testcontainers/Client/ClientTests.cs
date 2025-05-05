@@ -82,12 +82,13 @@ public class ClientTests(
     /// This approach isolates the messaging integration from HTTP concerns.
     /// </para>
     /// </summary>
-    /// <param name="serverStability">Controls the Server's behavior: Functional (success) or Failing (error).</param>
+    /// <param name="serverStability">Controls the Server's behavior: Functional (success), Flaky (inconsistent), or Failing (error).</param>
     /// <param name="expectSuccess">The expected outcome: true for success or false for failure.</param>
     [Theory]
     [InlineData(ServerStability.Functional, true)]
+    [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool expectSuccess)
+    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
     {
         // Arrange
         var startTime = DateTime.Now;
