@@ -24,6 +24,7 @@ public class Program
 
         builder.Services.AddMassTransit(configurator =>
         {
+            configurator.DisableUsageTelemetry();
             configurator.AddConsumer<PaymentConsumer>();
 
             configurator.AddConfigureEndpointsCallback((name, cfg) =>
