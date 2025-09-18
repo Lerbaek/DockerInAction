@@ -88,7 +88,9 @@ public class ClientTests(
     [InlineData(ServerStability.Functional, true)]
     [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
+    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsResult(
+        ServerStability serverStability,
+        bool? expectSuccess)
     {
         // Arrange
         var startTime = DateTime.Now;
