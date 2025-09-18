@@ -46,7 +46,8 @@ public class EndToEndContainersTests(
     [InlineData(ServerStability.Functional, true)]
     [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsSuccess(ServerStability serverStability,
+    public async Task HttpGetPaymentGenerator_GetWithoutHeaders_ServerLogsResult(
+        ServerStability serverStability,
         bool? expectSuccess)
     {
         // Arrange: Set up the Client and Server containers and configure RabbitMQ.

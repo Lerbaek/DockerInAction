@@ -81,7 +81,9 @@ public class ClientTests(
     [InlineData(ServerStability.Functional, true)]
     [InlineData(ServerStability.Flaky, null)]
     [InlineData(ServerStability.Failing, false)]
-    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsSuccess(ServerStability serverStability, bool? expectSuccess)
+    public async Task ControllerGetPaymentGenerator_AnyHeader_ServerLogsResult(
+        ServerStability serverStability,
+        bool? expectSuccess)
     {
         // Arrange: Set up the test environment, including the message bus and log tracking.
         // Useful methods: fixtures.Factory.Services.CreateScope(), fixtures.ServerFixture.GetLogLength()
