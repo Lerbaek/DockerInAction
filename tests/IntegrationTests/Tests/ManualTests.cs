@@ -43,7 +43,7 @@ namespace IntegrationTests.Tests
             const int rabbitMqManagementPort = 15672;
             TestcontainersSettings.ResourceReaperImage = new DockerImage("remote-docker-hub.artifactory.danskenet.net/testcontainers/ryuk:0.11.0");
             var container = new RabbitMqBuilder()
-                .WithImage("rabbitmq:3.11.20-management")
+                .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:4.0.9-management")
                 .WithPortBinding(rabbitMqManagementPort, assignRandomHostPort: true)
                 .WithName($"rabbitmq-{Guid.NewGuid()}")
                 .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Integration")

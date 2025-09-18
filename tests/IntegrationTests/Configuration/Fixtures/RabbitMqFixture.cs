@@ -24,7 +24,7 @@ public class RabbitMqFixture : ContainerFixture
     /// <inheritdoc/>
     protected override IContainer BuildContainer(INetwork network) => new RabbitMqBuilder()
             .WithName($"testcontainers-rabbitmq-{Guid.NewGuid()}")
-            .WithImage("rabbitmq:3.11.20-management")
+            .WithImage("remote-docker-hub.artifactory.danskenet.net/rabbitmq:4.0.9-management")
             .WithHostname(nameof(RabbitMQ))
             .WithPortBinding(15672, assignRandomHostPort: true)
             .WithUsername("guest")
