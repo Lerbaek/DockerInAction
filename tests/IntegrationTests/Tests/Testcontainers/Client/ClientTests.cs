@@ -5,7 +5,6 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.Client;
 

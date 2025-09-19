@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using IntegrationTests.Configuration.Collections;
 using IntegrationTests.Configuration.Factories;
 using MassTransit.Testing;
@@ -26,6 +26,7 @@ namespace IntegrationTests.Tests.TestHarness.Client;
 [Collection(nameof(ClientTestHarnessCollection))]
 public class ClientTests : IAsyncDisposable
 {
+    private readonly ITestOutputHelper _output;
     private readonly ITestHarness _testHarness;
     private readonly HttpClient _httpClient;
 
@@ -33,8 +34,9 @@ public class ClientTests : IAsyncDisposable
     /// Initializes a new instance of the <see cref="ClientTests"/> class and configures the test harness.
     /// </summary>
     /// <param name="factory">The factory for creating a client application for testing.</param>
-    public ClientTests(ClientIntegrationTestWebAppFactory factory)
+    public ClientTests(ClientIntegrationTestWebAppFactory factory, ITestOutputHelper output)
     {
+        _output = output;
         // Configure the factory to use MassTransit's test harness
         factory.UseTestHarness();
         _testHarness = factory.Services.GetRequiredService<ITestHarness>();
