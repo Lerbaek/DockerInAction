@@ -1,4 +1,6 @@
 ﻿using IntegrationTests.Configuration.Fixtures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 using Xunit;
 
 namespace IntegrationTests.Tests.Testcontainers.Fixtures;
@@ -25,6 +27,22 @@ namespace IntegrationTests.Tests.Testcontainers.Fixtures;
 /// </remarks>
 public class MessagingTestFixtures : IAsyncLifetime
 {
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public MessagingTestFixtures()
+    {
+        var services = new ServiceCollection();
+        services
+            .AddHttpClient<MessagingTestFixtures>()
+            .AddStandardResilienceHandler()
+            .Configure(options => options.Retry = new HttpRetryStrategyOptions());
+        _httpClientFactory = services
+            .BuildServiceProvider()
+            .GetRequiredService<IHttpClientFactory>();
+    }
+
+    public HttpClient HttpClient { get; init; }
+
     /// <summary>
     /// The Docker network fixture that connects all containers.
     /// <para>
@@ -57,7 +75,7 @@ public class MessagingTestFixtures : IAsyncLifetime
     /// </list>
     /// </remarks>
     /// <returns>A task representing the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await NetworkFixture.InitializeAsync();
         await InitializeAfterNetworkAsync();
@@ -93,8 +111,7 @@ public class MessagingTestFixtures : IAsyncLifetime
     /// <item>Finally, dispose of the Docker network</item>
     /// </list>
     /// </remarks>
-    /// <returns>A task representing the asynchronous disposal operation.</returns>
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await DisposeBeforeNetworkAsync();
         await NetworkFixture.DisposeAsync();
@@ -112,7 +129,6 @@ public class MessagingTestFixtures : IAsyncLifetime
     /// The base implementation disposes of the RabbitMQ container.
     /// </para>
     /// </remarks>
-    /// <returns>A task representing the asynchronous container disposal.</returns>
     protected virtual async Task DisposeBeforeNetworkAsync()
     {
         await RabbitMqFixture.DisposeAsync();

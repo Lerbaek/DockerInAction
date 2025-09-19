@@ -2,10 +2,8 @@
 using IntegrationTests.Tests.Testcontainers.Fixtures;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.EndToEnd;
-
 
 /// <summary>
 /// End-to-end tests for the entire solution using Testcontainers.

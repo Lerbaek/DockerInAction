@@ -7,7 +7,6 @@ using NSubstitute;
 using NSubstitute.Community.Logging;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.Server;
 
