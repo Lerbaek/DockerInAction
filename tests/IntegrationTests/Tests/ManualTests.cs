@@ -2,7 +2,7 @@
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
-using FluentAssertions;
+using AwesomeAssertions;
 using Testcontainers.RabbitMq;
 using Xunit;
 
@@ -36,7 +36,7 @@ namespace IntegrationTests.Tests
         /// which is valuable for exploratory testing, debugging message flows, or understanding RabbitMQ behavior.
         /// </para>
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         public async Task StartRabbitMq()
         {
             // Arrange
@@ -50,7 +50,7 @@ namespace IntegrationTests.Tests
                 .Build();
 
             // Act
-            await container.StartAsync();
+            await container.StartAsync(TestContext.Current.CancellationToken);
 
             if (Debugger.IsAttached)
             {

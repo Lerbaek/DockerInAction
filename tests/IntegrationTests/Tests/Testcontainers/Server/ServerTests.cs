@@ -7,7 +7,6 @@ using NSubstitute;
 using NSubstitute.Community.Logging;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.Server;
 
@@ -96,8 +95,9 @@ public class ServerTests
             action: () => consumerLogged = true);
 
         // Act
-        var response = await httpClient.GetAsync("/PaymentGenerator");
-        _output.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
+        var response = await httpClient.GetAsync("/PaymentGenerator", TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        _output.WriteLine($"Response: {content}");
 
         // Wait for the consumer to log a message
         SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(10));

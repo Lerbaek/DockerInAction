@@ -1,8 +1,8 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
-using FluentAssertions;
-using Xunit.Abstractions;
+using AwesomeAssertions;
+using Xunit;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
@@ -38,7 +38,10 @@ public sealed class ServerFixture() : ImageFixture(nameof(Server))
     /// <param name="since">The starting time to retrieve logs from.</param>
     /// <returns>A tuple containing the standard output and standard error logs.</returns>
     private async Task<(string Stdout, string Stderr)> GetLogsAsync(DateTime since) =>
-        await Container.GetLogsAsync(since, timestampsEnabled: false);
+        await Container.GetLogsAsync(
+            since,
+            timestampsEnabled: false,
+            ct: TestContext.Current.CancellationToken);
     
     /// <summary>
     /// Asserts that the Server logs contain expected success or failure messages.
@@ -63,7 +66,7 @@ public sealed class ServerFixture() : ImageFixture(nameof(Server))
         var log = string.Empty;
         var validLogMessages = GetValidLogMessages(expectSuccess);
 
-        SpinWait.SpinUntil(() =>
+        var validLogMessageReceived = SpinWait.SpinUntil(() =>
         {
             log = GetLogsAsync(since: startTime)
                 .Result.Stdout[initialLogLength..];
@@ -75,7 +78,7 @@ public sealed class ServerFixture() : ImageFixture(nameof(Server))
 
         output.WriteLine(string.Empty);
         output.WriteLine(log);
-        log.Should().ContainAny(validLogMessages);
+        validLogMessageReceived.Should().BeTrue();
     }
 
     /// <summary>

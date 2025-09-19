@@ -2,10 +2,8 @@
 using IntegrationTests.Tests.Testcontainers.Fixtures;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.EndToEnd;
-
 
 /// <summary>
 /// End-to-end tests for the entire solution using Testcontainers.
@@ -66,11 +64,15 @@ public class EndToEndContainersTests(
         var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
 
         // Act
-        var response = await httpClient.GetAsync("/PaymentGenerator");
-
-        output.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
+        var response = await httpClient.GetAsync("/PaymentGenerator", TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        output.WriteLine($"Response: {content}");
 
         // Assert
-        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
+        fixtures.ServerFixture.AssertServerLogSuccess(
+            expectSuccess,
+            startTime,
+            initialLogLength,
+            output);
     }
 }

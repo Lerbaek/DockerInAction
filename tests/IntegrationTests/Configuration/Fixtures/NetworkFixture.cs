@@ -32,8 +32,7 @@ public class NetworkFixture : IAsyncLifetime
     /// <summary>
     /// Initializes the Docker network by creating it.
     /// </summary>
-    /// <returns>A task representing the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await Network.CreateAsync();
     }
@@ -41,8 +40,7 @@ public class NetworkFixture : IAsyncLifetime
     /// <summary>
     /// Disposes the Docker network, removing it from Docker.
     /// </summary>
-    /// <returns>A task representing the asynchronous disposal operation.</returns>
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Network.DisposeAsync();
     }

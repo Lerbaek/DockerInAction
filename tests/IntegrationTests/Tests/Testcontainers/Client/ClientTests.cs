@@ -5,7 +5,6 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace IntegrationTests.Tests.Testcontainers.Client;
 
@@ -58,7 +57,7 @@ public class ClientTests(
         var initialLogLength = await fixtures.ServerFixture.GetLogLength(startTime);
 
         // Act
-        await httpClient.GetAsync("/PaymentGenerator");
+        await httpClient.GetAsync("/PaymentGenerator", TestContext.Current.CancellationToken);
 
         // Assert
         fixtures.ServerFixture.AssertServerLogSuccess(
@@ -101,9 +100,17 @@ public class ClientTests(
 
         // Act
         var payment = new Fixture().Create<Payment>();
-        await publish.Publish(payment, context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
+
+        await publish.Publish(
+            payment,
+            context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"),
+            TestContext.Current.CancellationToken);
 
         // Assert
-        fixtures.ServerFixture.AssertServerLogSuccess(expectSuccess, startTime, initialLogLength, output);
+        fixtures.ServerFixture.AssertServerLogSuccess(
+            expectSuccess,
+            startTime,
+            initialLogLength,
+            output);
     }
 }
