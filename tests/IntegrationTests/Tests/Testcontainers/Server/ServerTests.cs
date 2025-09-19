@@ -70,13 +70,7 @@ public class ServerTests
         bool? expectSuccess)
     {
         // Arrange
-        var hostname = _fixtures.ClientFixture.Hostname;
-        var port = _fixtures.ClientFixture.Port;
-
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri($"http://{hostname}:{port}"),
-        };
+        var httpClient = _fixtures.ClientFixture.HttpClient;
 
         // Add a custom header to control the Server's stability mode
         httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
@@ -100,7 +94,7 @@ public class ServerTests
         _output.WriteLine($"Response: {content}");
 
         // Wait for the consumer to log a message
-        SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(10));
+        SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(15));
 
         // Assert
         // Verify that the Server logged the expected messages

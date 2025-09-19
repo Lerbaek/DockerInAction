@@ -1,6 +1,4 @@
 ﻿using IntegrationTests.Configuration.Fixtures;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
 using Xunit;
 
 namespace IntegrationTests.Tests.Testcontainers.Fixtures;
@@ -27,22 +25,6 @@ namespace IntegrationTests.Tests.Testcontainers.Fixtures;
 /// </remarks>
 public class MessagingTestFixtures : IAsyncLifetime
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public MessagingTestFixtures()
-    {
-        var services = new ServiceCollection();
-        services
-            .AddHttpClient<MessagingTestFixtures>()
-            .AddStandardResilienceHandler()
-            .Configure(options => options.Retry = new HttpRetryStrategyOptions());
-        _httpClientFactory = services
-            .BuildServiceProvider()
-            .GetRequiredService<IHttpClientFactory>();
-    }
-
-    public HttpClient HttpClient { get; init; }
-
     /// <summary>
     /// The Docker network fixture that connects all containers.
     /// <para>

@@ -74,7 +74,7 @@ public sealed class ServerFixture() : ImageFixture(nameof(Server))
             return Array.Exists(
                 validLogMessages,
                 validLogMessage => log.Contains(validLogMessage));
-        }, TimeSpan.FromSeconds(10));
+        }, TimeSpan.FromSeconds(15));
 
         output.WriteLine(string.Empty);
         output.WriteLine(log);

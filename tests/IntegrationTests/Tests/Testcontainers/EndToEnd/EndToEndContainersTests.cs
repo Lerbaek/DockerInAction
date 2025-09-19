@@ -49,13 +49,7 @@ public class EndToEndContainersTests(
         bool? expectSuccess)
     {
         // Arrange
-        var hostname = fixtures.ClientFixture.Hostname;
-        var port = fixtures.ClientFixture.Port;
-
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri($"http://{hostname}:{port}"),
-        };
+        var httpClient = fixtures.ClientFixture.HttpClient;
 
         // Add a custom header to control the Server's stability mode
         httpClient.DefaultRequestHeaders.Add(nameof(ServerStability), serverStability.ToString());
