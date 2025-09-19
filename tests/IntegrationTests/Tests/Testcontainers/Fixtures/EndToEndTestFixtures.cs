@@ -1,5 +1,6 @@
 ﻿using IntegrationTests.Configuration.Fixtures;
 using IntegrationTests.Tests.Testcontainers.EndToEnd;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Tests.Testcontainers.Fixtures;
 

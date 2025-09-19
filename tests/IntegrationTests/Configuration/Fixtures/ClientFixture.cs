@@ -1,5 +1,6 @@
 ﻿using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Configuration.Fixtures;
 
@@ -29,6 +30,23 @@ public sealed class ClientFixture() : ImageFixture(nameof(Client))
             .WithPortBinding(8080, assignRandomHostPort: true)
             .WithHostname(nameof(Client))
             .Build();
+
+    public HttpClient HttpClient
+    {
+        get
+        {
+            var services = new ServiceCollection();
+
+            services
+                .AddHttpClient<ClientFixture>(c => c.BaseAddress = new Uri($"http://{Hostname}:{Port}"))
+                .AddStandardResilienceHandler(options => options.Retry.MaxRetryAttempts = 3);
+
+            var provider = services.BuildServiceProvider();
+            var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(ClientFixture));
+            return httpClient;
+
+        }
+    }
 
     /// <summary>
     /// Gets the hostname of the Client container.
