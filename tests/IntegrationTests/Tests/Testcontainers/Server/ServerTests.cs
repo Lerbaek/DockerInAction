@@ -70,7 +70,7 @@ public class ServerTests
         bool? expectSuccess)
     {
         // Arrange: Set up the HTTP client and configure the Server's stability mode.
-        // Useful methods: _fixtures.ClientFixture.Hostname, _fixtures.ClientFixture.Port, httpClient.DefaultRequestHeaders.Add()
+        // Useful methods: _fixtures.ClientFixture.HttpClient, httpClient.DefaultRequestHeaders.Add()
 
         // Act: Send an HTTP GET request to the PaymentGenerator endpoint.
         // Useful methods: httpClient.GetAsync()
