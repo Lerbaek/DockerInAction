@@ -21,6 +21,7 @@ services:
         condition: service_healthy
   rabbitmq:
     image: remote-docker-hub.artifactory.danskenet.net/rabbitmq:4.0.9-management
+    user: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
