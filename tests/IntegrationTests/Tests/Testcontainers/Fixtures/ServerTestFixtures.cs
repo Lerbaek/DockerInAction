@@ -54,9 +54,8 @@ public class ServerTestFixtures : MessagingTestFixtures
     /// </remarks>
     protected override async Task InitializeAfterNetworkAsync()
     {
-        await Task.WhenAll(
-            base.InitializeAfterNetworkAsync(),
-            ClientFixture.InitializeAsync(NetworkFixture.Network));
+        await base.InitializeAfterNetworkAsync();
+        await ClientFixture.InitializeAsync(NetworkFixture.Network);
 
         Factory.ConfigureRabbitMq(RabbitMqFixture);
     }

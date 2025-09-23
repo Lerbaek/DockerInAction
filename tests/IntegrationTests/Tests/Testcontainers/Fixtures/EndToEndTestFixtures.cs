@@ -54,10 +54,9 @@ public class EndToEndTestFixtures : MessagingTestFixtures
     /// </remarks>
     protected override async Task InitializeAfterNetworkAsync()
     {
-        await Task.WhenAll(
-            base.InitializeAfterNetworkAsync(),
-            ServerFixture.InitializeAsync(NetworkFixture.Network),
-            ClientFixture.InitializeAsync(NetworkFixture.Network));
+        await base.InitializeAfterNetworkAsync();
+        await ServerFixture.InitializeAsync(NetworkFixture.Network);
+        await ClientFixture.InitializeAsync(NetworkFixture.Network);
     }
 
     /// <inheritdoc/>

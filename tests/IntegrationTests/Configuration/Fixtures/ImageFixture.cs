@@ -27,21 +27,21 @@ public abstract class ImageFixture(string projectName) : ContainerFixture
         .WithDockerfile($"{projectName}/Dockerfile")
         .Build();
 
-    /// <inheritdoc/>
     /// <remarks>
     /// Extends the base initialization to first build the Docker image before creating
     /// and starting the container.
     /// </remarks>
+    /// <inheritdoc/>
     public override async Task InitializeAsync(INetwork network)
     {
         await Image.CreateAsync();
         await base.InitializeAsync(network);
     }
 
-    /// <inheritdoc/>
     /// <remarks>
     /// Extends the base disposal to clean up the Docker image after the container is disposed.
     /// </remarks>
+    /// <inheritdoc/>
     public override async ValueTask DisposeAsync()
     {
         await Image.DisposeAsync();
