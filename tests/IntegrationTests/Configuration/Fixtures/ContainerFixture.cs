@@ -25,6 +25,11 @@ public abstract class ContainerFixture : IAsyncDisposable
     /// Exception thrown when attempting to access a container before it has been initialized.
     /// </summary>
     public class ContainerNotInitializedException(string message) : Exception(message);
+
+    /// <summary>
+    /// Easily accessible instance of the not-initialized exception with the current type name.
+    /// </summary>
+    protected ContainerNotInitializedException NotInitializedException => new($"{GetType().Name} has not yet been initialized.");
     
     /// <summary>
     /// Static constructor to configure Testcontainers settings.
@@ -47,11 +52,7 @@ public abstract class ContainerFixture : IAsyncDisposable
     /// Gets the container instance if it has been initialized.
     /// </summary>
     /// <exception cref="ContainerNotInitializedException">Thrown if the container has not been initialized.</exception>
-    protected IContainer Container
-    {
-        get => _container ?? throw new ContainerNotInitializedException($"{GetType().Name} has not yet been initialized.");
-        set => _container = value;
-    }
+    protected IContainer Container => _container ?? throw NotInitializedException;
 
     /// <summary>
     /// Creates a container builder configured with RabbitMQ connection settings.

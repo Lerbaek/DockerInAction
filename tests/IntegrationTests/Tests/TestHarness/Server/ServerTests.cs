@@ -69,7 +69,8 @@ public class ServerTests : IAsyncDisposable
         // Act
         await _testHarness.Bus.Publish(
             payment,
-            context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"));
+            context => context.Headers.Set(nameof(ServerStability), $"{serverStability}"),
+            TestContext.Current.CancellationToken);
 
         // Assert
         var success = await _testHarness.Consumed.Any<Payment>(
@@ -77,7 +78,8 @@ public class ServerTests : IAsyncDisposable
                 // Only consider at messages newer than startTime
                 context.StartTime.ToUniversalTime() > startTime
                 &&
-                exceptionExpected == context.Exception is { });
+                exceptionExpected == context.Exception is { },
+            TestContext.Current.CancellationToken);
 
         success.Should().BeTrue();
     }

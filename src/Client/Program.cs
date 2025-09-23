@@ -21,6 +21,7 @@ public class Program
         builder.Services.AddHttpClient<PaymentGeneratorController>();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddHealthChecks();
         builder.Services.AddOptions<ClientOptions>().BindConfiguration("ClientOptions");
 
         builder.Services.AddMassTransit(configurator =>
@@ -39,6 +40,7 @@ public class Program
         });
 
         var app = builder.Build();
+        app.MapHealthChecks("/health");
 
         if (app.Environment.IsDevelopment())
         {
