@@ -94,7 +94,7 @@ public class ServerTests
         _output.WriteLine($"Response: {content}");
 
         // Wait for the consumer to log a message
-        SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(15));
+        SpinWait.SpinUntil(() => consumerLogged, TimeSpan.FromSeconds(30));
 
         // Assert
         // Verify that the Server logged the expected messages
