@@ -53,9 +53,8 @@ public class ClientTestFixtures : MessagingTestFixtures
     /// </remarks>
     protected override async Task InitializeAfterNetworkAsync()
     {
-        await Task.WhenAll(
-            base.InitializeAfterNetworkAsync(),
-            ServerFixture.InitializeAsync(NetworkFixture.Network));
+        await base.InitializeAfterNetworkAsync();
+        await ServerFixture.InitializeAsync(NetworkFixture.Network);
 
         Factory.ConfigureRabbitMq(RabbitMqFixture);
     }
@@ -74,9 +73,8 @@ public class ClientTestFixtures : MessagingTestFixtures
     /// </remarks>
     protected override async Task DisposeBeforeNetworkAsync()
     {
-        await Task.WhenAll(
-            base.DisposeBeforeNetworkAsync(),
-            ServerFixture.DisposeAsync().AsTask(),
-            Factory.DisposeAsync().AsTask());
+        await Factory.DisposeAsync();
+        await ServerFixture.DisposeAsync();
+        await base.DisposeBeforeNetworkAsync();
     }
 }

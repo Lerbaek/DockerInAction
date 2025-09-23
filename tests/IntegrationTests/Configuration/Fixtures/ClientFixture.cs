@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Containers;
+﻿using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,44 +25,61 @@ namespace IntegrationTests.Configuration.Fixtures;
 /// </remarks>
 public sealed class ClientFixture() : ImageFixture(nameof(Client))
 {
+    private ServiceProvider? _serviceProvider;
+
     /// <inheritdoc/>
     protected override IContainer BuildContainer(INetwork network) =>
         CreateRabbitMqConfiguredContainerBuilder(Image, network)
             .WithPortBinding(8080, assignRandomHostPort: true)
             .WithHostname(nameof(Client))
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilHttpRequestIsSucceeded(strategy =>
+                        strategy
+                            .UsingTls(false)
+                            .ForPath("/health")
+                            .ForPort(8080)))
             .Build();
 
-    public HttpClient HttpClient
+    /// <summary>
+    /// Gets an <see cref="HttpClient"/> configured to communicate with the Client application
+    /// </summary>
+    public HttpClient HttpClient =>
+        _serviceProvider?
+            .GetRequiredService<IHttpClientFactory>()
+            .CreateClient(nameof(ClientFixture))
+        ?? throw NotInitializedException;
+
+    /// <remarks>
+    /// Extends the base initialization to register and configure an
+    /// <see cref="HttpClient"/> targeting the Client application.
+    /// </remarks>
+    /// <inheritdoc/>
+    public override async Task InitializeAsync(INetwork network)
     {
-        get
-        {
-            var services = new ServiceCollection();
+        await base.InitializeAsync(network);
 
-            services
-                .AddHttpClient<ClientFixture>(c => c.BaseAddress = new Uri($"http://{Hostname}:{Port}"))
-                .AddStandardResilienceHandler(options => options.Retry.MaxRetryAttempts = 3);
+        var services = new ServiceCollection();
 
-            var provider = services.BuildServiceProvider();
-            var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(ClientFixture));
-            return httpClient;
+        services.AddHttpClient<ClientFixture>(c =>
+            c.BaseAddress = new Uri(
+                $"http://{Container.Hostname}:{(ushort?)Container.GetMappedPublicPort(8080)}"));
 
-        }
+        _serviceProvider = services.BuildServiceProvider();
     }
 
-    /// <summary>
-    /// Gets the hostname of the Client container.
-    /// <para>
-    /// This hostname can be used to connect to the Client container from other containers
-    /// within the same Docker network.
-    /// </para>
-    /// </summary>
-    public string? Hostname => Container.Hostname;
+    /// <remarks>
+    /// Extends the base disposal to dispose of the <see cref="ServiceProvider"/> beforing cleaning up the Docker image and container.
+    /// </remarks>
+    /// <inheritdoc/>
+    public override async ValueTask DisposeAsync()
+    {
+        if(_serviceProvider is {})
+        {
+            await _serviceProvider.DisposeAsync();
+            _serviceProvider = null;
+        }
 
-    /// <summary>
-    /// Gets the public port mapped to the Client's HTTP port (8080).
-    /// <para>
-    /// This port can be used to make HTTP requests to the Client from the host machine.
-    /// </para>
-    /// </summary>
-    public ushort? Port => Container.GetMappedPublicPort(8080);
+        await base.DisposeAsync();
+    }
 }
